@@ -1,17 +1,19 @@
 var Lab = require('lab');
 var lessitizer = require('..');
-var os = require('os');
-var crypto = require('crypto');
 var path = require('path');
 var fs = require('fs');
+var rmrf = require('rmrf');
 var filePath = function (f) {
     return path.join(__dirname, '..', 'sample', 'less', f + '.less');
 };
 var buildDir = function () {
-    var tmpHash = crypto.randomBytes(16).toString('hex');
-    var buildDir = os.tmpdir() + tmpHash;
-    fs.mkdirSync(buildDir);
-    return buildDir;
+    var _buildDir = path.join(__dirname, '..', '_build');
+    var exists = fs.existsSync(_buildDir);
+    if (exists) {
+        rmrf(_buildDir);
+    }
+    fs.mkdirSync(_buildDir);
+    return _buildDir;
 };
 
 
