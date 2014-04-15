@@ -34,21 +34,34 @@ lessitizer({
 
 ## API
 
-- `files` (`String` or `Array`)
+- `files` (`String` or `Array`, required)
 
 Each of these should be a path to a Less file that will be parsed and written to `outputDir`.
 
-- `outputDir` (`String`)
+- `outputDir` (`String`, required)
 
 The path to the directory where all the CSS files will be written.
 
-- `less` (`Object`)
+- `less` (`Object`, see below for defaults)
 
-An object that will be passed directly to `new less.Parser()`. See the [Less configuration](http://lesscss.org/#using-less-configuration) docs for available options.
+An object that will be passed directly to `new less.Parser()`. See the [Less configuration](http://lesscss.org/#using-less-configuration) docs for available options. There are a few default values:
 
-- `toCSS (`Object`)
+```json
+{
+    optimization: 1,
+    relativeUrls: true,
+    paths: [DIR_OF_LESS_FILE],
+    filename: NAME_OF_LESS_FILE + '.less'
+}
+```
+
+- `toCSS` (`Object`, default `{}`)
 
 An object that will be passed directly to `cssTree.toCSS()`. See the [Less configuration](http://lesscss.org/#using-less-configuration) docs for available options.
+
+- `developmentMode` (`Boolean`, default `false`)
+
+If `developmentMode` is `true`, any errors will be written to the CSS file and displayed instead of the `body`.
 
 
 ## Examples

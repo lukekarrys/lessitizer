@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "jshint": "^2.5.0",
+    "lab": "^3.0.1",
     "precommit-hook": "^0.4.1"
   },
   "homepage": "https://github.com/lukekarrys/lessitizer",
@@ -29,7 +30,7 @@
     "url": "git://github.com/lukekarrys/lessitizer.git"
   },
   "scripts": {
-    "test": "lab -t 100",
+    "test": "./node_modules/.bin/lab -t 100",
     "start": "node sample/build && cd sample && python -m SimpleHTTPServer && cd .."
   }
 }
