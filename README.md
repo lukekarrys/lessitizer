@@ -48,10 +48,10 @@ An object that will be passed directly to `new less.Parser()`. See the [Less con
 
 ```json
 {
-    optimization: 1,
-    relativeUrls: true,
-    paths: [DIR_OF_LESS_FILE],
-    filename: NAME_OF_LESS_FILE + '.less'
+    "optimization": 1,
+    "relativeUrls": true,
+    "paths": [DIR_OF_LESS_FILE],
+    "filename": "NAME_OF_LESS_FILE.less"
 }
 ```
 
