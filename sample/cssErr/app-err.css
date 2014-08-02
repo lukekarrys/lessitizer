@@ -1,4 +1,5 @@
 body > * { display: none; }
+body {background: #fff;}
 body:before {
    display: block;
    white-space: pre;
