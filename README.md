@@ -15,19 +15,40 @@ lessitizer
 ## Usage
 
 ```js
+// Parse `styles/less/theme.less` and `styles/less/app.less`
+// and write them to `styles/css/theme.css` and `styles/css/app.css`
 lessitizer({
-    files: __dirname + '/styles/less/app.less',
+    files: [
+        __dirname + '/styles/less/theme.less',
+        __dirname + '/styles/less/app.less'
+    ]
     outputDir: __dirname + '/styles/css',
-    // See http://lesscss.org/#using-less-configuration for less/toCSS options
-    less: {
-        // Less parser options
-    },
-    toCSS: {
-        // toCSS options
-    }
-}, function (err, files) {
+}, function (err, cssPaths) {
     console.log(err || 'No errors!');
-    console.log(files.join('\n'));
+    // An array of generated css paths
+    console.log(cssFiles);
+});
+```
+
+```js
+// Parse the Less strings and pass it to the callback
+lessitizer({
+    files: [{
+        less: 'body { p { color: red; } }'
+    }, {
+        less: 'body { a { color: blue; } }'
+    }]
+}, function (err, css) {
+    console.log(err || 'No errors!');
+    // An array of generated css:
+    console.log(css.join('\n'));
+    // body p {
+    //   color: red;
+    // }
+    //
+    // body a {
+    //   color: blue;
+    // }
 });
 ```
 
@@ -36,11 +57,22 @@ lessitizer({
 
 - `files` (`String` or `Array`, required)
 
-Each of these should be a path to a Less file that will be parsed and written to `outputDir`.
+Each `files` can be one of two things:
+  - a path to a less file
+  - an object where `obj.less` is a string of Less
 
-- `outputDir` (`String`, required)
+In the case where you are passing an object, you can also include a `dir` property. This is the path to where the directory where Less file *should* be, if it were actually written to disk. This will allow you to use Less's `@import` syntax relative to the `dir` you pass in. It should look like this:
 
-The path to the directory where all the CSS files will be written.
+```js
+{
+  less: '@import...',
+  dir: '/path/to/less/styles'
+}
+```
+
+- `outputDir` (`String`, optional)
+
+The path to the directory where all the CSS files will be written. If this is omitted, then the generated CSS will be passed to the callback.
 
 - `less` (`Object`, see below for defaults)
 

@@ -4,6 +4,8 @@ var async = require('async');
 var defaults = require('defaults');
 var fs = require('fs');
 var cssesc = require('cssesc');
+var _ = require('lodash');
+
 
 function passError(err, cb) {
     if (cb) {
@@ -33,11 +35,12 @@ module.exports = function (options, done) {
     });
 
     // Some real bad errors right here
-    if (!options.outputDir) {
-        optionsErr = new Error('You must specify an `outputDir`.');
-    }
-    else if (!options.files || options.files.length === 0) {
+    if (!options.files || options.files.length === 0) {
         optionsErr = new Error('You must specify some `files`.');
+    }
+
+    if (!done || typeof done !== 'function') {
+        optionsErr = new Error('A callback must be specified.');
     }
 
     if (optionsErr) {
@@ -51,41 +54,70 @@ module.exports = function (options, done) {
     var lessFiles = Array.isArray(options.files) ? options.files : [options.files];
     var outputDir = options.outputDir;
 
-    async.each(lessFiles, function _lessFile(lessFile, fileDone) {
-        var lessFileName = path.basename(lessFile, '.less');
-        var lessDir = path.dirname(lessFile);
-        var lessPath = path.resolve(lessDir, lessFileName + '.less');
-        var cssPath = path.resolve(outputDir, lessFileName + '.css');
-        var lessString = fs.readFileSync(lessPath, 'utf8');
+    async.map(lessFiles, function _lessFile(lessFile, fileDone) {
+        var filename;
+        var lessString;
+        var lessDir;
+        var lessOptions = _.clone(options.less);
+        var paths = [];
 
-        defaults(options.less, {
+        if (typeof lessFile === 'string') {
+            filename = lessFile;
+        } else {
+            lessDir = path.extname(lessFile.dir) === '.less' ? path.dirname(lessFile.dir) : lessFile.dir;
+            lessString = lessFile.less;
+        }
+
+        var lessFileName = filename ? path.basename(filename) : 'lessitizier-file-' + _.uniqueId() + '.less';
+        var cssPath = outputDir ? path.resolve(outputDir, path.basename(lessFileName, '.less') + '.css') : null;
+
+        if (!lessDir) {
+            lessDir = path.dirname(filename) !== '.' ? path.dirname(filename) : null;
+        }
+
+        if (!lessString && lessDir) {
+            lessString = fs.readFileSync(path.resolve(lessDir, lessFileName), 'utf8');
+        }
+
+        if (lessDir) {
+            paths.push(lessDir);
+        }
+
+        if (lessOptions.paths) {
+            paths = paths.concat(lessOptions.paths);
+        }
+
+        defaults(lessOptions, {
             optimization: 1,
             relativeUrls: true,
-            paths: [lessDir],
-            filename: lessFileName + '.less',
+            paths: _.uniq(paths),
+            filename: lessFileName,
             outputDir: outputDir
         });
 
-        new less.Parser(options.less)
+        new less.Parser(lessOptions)
         .parse(lessString, function _parseLess(lessErr, cssTree) {
             var css;
             lessErr && (lessErr = less.formatError(lessErr));
+
             if (lessErr && !options.developmentMode) {
-                return fileDone(lessErr);
+                return fileDone(new Error(lessErr));
             } else if (lessErr) {
                 css = cssErr(lessErr);
             } else {
                 css = cssTree.toCSS(options.toCSS);
             }
-            fs.writeFile(cssPath, css, {encoding: 'utf8'}, function _writeFile(fileErr) {
-                if (fileErr || lessErr) {
-                    fileDone(fileErr || lessErr);
-                } else {
-                    fileDone(null);
-                }
-            });
+
+            if (cssPath) {
+                fs.writeFile(cssPath, css, {encoding: 'utf8'}, function (fileErr) {
+                    if (fileErr) return fileDone(fileErr);
+                    fileDone(null, cssPath);
+                });
+            } else {
+                fileDone(null, css);
+            }
         });
-    }, function (err) {
-        done(err || null, lessFiles);
+    }, function (err, results) {
+        done(err || null, results);
     });
 };
