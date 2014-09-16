@@ -7,6 +7,10 @@ var cssesc = require('cssesc');
 var _ = require('lodash');
 
 
+function overwriteWarn(msg) {
+    console.warn('Lessitizer will overwrite the passed in ' + msg + ' option');
+}
+
 function passError(err, cb) {
     if (cb) {
         cb(err);
@@ -21,6 +25,7 @@ function cssErr(err) {
     css += 'body:before { content: "' + errMessage + '"; }';
     return css;
 }
+
 
 module.exports = function (options, done) {
     var optionsErr;
@@ -48,44 +53,59 @@ module.exports = function (options, done) {
     }
 
     // Some options we dont allow
+    if (options.less.outputDir) {
+        overwriteWarn('less.outputDir');
+    }
+    if (options.less.filename) {
+        overwriteWarn('less.filename');
+    }
     delete options.less.outputDir;
     delete options.less.filename;
 
     var lessFiles = Array.isArray(options.files) ? options.files : [options.files];
     var outputDir = options.outputDir;
+    var count = 1;
 
     async.map(lessFiles, function _lessFile(lessFile, fileDone) {
-        var filename;
-        var lessString;
+        var lessOptions = _.cloneDeep(options.less);
+        var paths = ['.'];
+        var lessFileName;
         var lessDir;
-        var lessOptions = _.clone(options.less);
-        var paths = [];
+        var lessString;
+        var cssPath;
 
         if (typeof lessFile === 'string') {
-            filename = lessFile;
+            lessDir = path.dirname(lessFile);
+            lessFileName = path.basename(lessFile);
         } else {
-            lessDir = path.extname(lessFile.dir) === '.less' ? path.dirname(lessFile.dir) : lessFile.dir;
+            lessDir = lessFile.dir;
+            lessFileName = lessFile.filename;
             lessString = lessFile.less;
         }
 
-        var lessFileName = filename ? path.basename(filename) : 'lessitizier-file-' + _.uniqueId() + '.less';
-        var cssPath = outputDir ? path.resolve(outputDir, path.basename(lessFileName, '.less') + '.css') : null;
-
-        if (!lessDir) {
-            lessDir = path.dirname(filename) !== '.' ? path.dirname(filename) : null;
+        // Make a fallback less file name
+        if (!lessFileName) {
+            lessFileName = 'lessitizier-file-' + count++ + '.less';
         }
 
-        if (!lessString && lessDir) {
-            lessString = fs.readFileSync(path.resolve(lessDir, lessFileName), 'utf8');
+        // If we have an output dir, create the path to write the css file
+        if (outputDir) {
+            cssPath = path.resolve(outputDir, path.basename(lessFileName, '.less') + '.css');
         }
 
-        if (lessDir) {
-            paths.push(lessDir);
+        // If we dont have a string, read it from the file
+        if (!lessString && typeof lessFile === 'string') {
+            lessString = fs.readFileSync(path.resolve(lessFile), 'utf8');
         }
 
-        if (lessOptions.paths) {
-            paths = paths.concat(lessOptions.paths);
-        }
+        // Paths for less parser to use for imports
+        // - include our dir and filename if we have one
+        // - include user supplied options too
+        _.chain([lessDir, lessFileName, lessOptions.paths]).flatten().each(function (p) {
+            if (p && typeof p === 'string') {
+                paths.push(p);
+            }
+        });
 
         defaults(lessOptions, {
             optimization: 1,

@@ -124,15 +124,80 @@ Lab.experiment('Pass in less strings', function () {
         });
     });
 
-        Lab.test('dir property as filename', function (done) {
+    Lab.test('with filename property', function (done) {
         lessitizer({
             files: {
                 less: fileAsContents(filePath('app-combined')),
-                dir: filePath('app-combined')
+                filename: filePath('app-combined')
             }
         }, function (err, css) {
             Lab.expect(err).to.equal(null);
             Lab.expect(typeof css[0]).to.equal('string');
+            done();
+        });
+    });
+
+    Lab.test('with filename property and outputDir', function (done) {
+        lessitizer({
+            files: {
+                less: fileAsContents(filePath('app-combined')),
+                filename: filePath('app-combined')
+            },
+            outputDir: buildDir()
+        }, function (err, css) {
+            Lab.expect(err).to.equal(null);
+            Lab.expect(typeof css[0]).to.equal('string');
+            done();
+        });
+    });
+
+
+    Lab.test('written to output dir w/ no filename', function (done) {
+        lessitizer({
+            files: {
+                less: fileAsContents(filePath('app-combined')),
+                dir: path.dirname(filePath('app-combined'))
+            },
+            outputDir: buildDir()
+        }, function (err, css) {
+            Lab.expect(err).to.equal(null);
+            Lab.expect(typeof css[0]).to.equal('string');
+            Lab.expect(css[0].indexOf('lessitizier-file-1.css') > -1).to.equal(true);
+            Lab.expect(css[0].indexOf('_build/') > -1).to.equal(true);
+            done();
+        });
+    });
+
+    Lab.test('written to output dir w/ filename', function (done) {
+        lessitizer({
+            files: {
+                less: fileAsContents(filePath('app-combined')),
+                dir: path.dirname(filePath('app-combined')),
+                filename: 'cool-less-file.less'
+            },
+            outputDir: buildDir()
+        }, function (err, css) {
+            Lab.expect(err).to.equal(null);
+            Lab.expect(typeof css[0]).to.equal('string');
+            Lab.expect(css[0].indexOf('cool-less-file.css') > -1).to.equal(true);
+            Lab.expect(css[0].indexOf('_build/') > -1).to.equal(true);
+            done();
+        });
+    });
+
+        Lab.test('written to output dir w/ filename w/o less ext', function (done) {
+        lessitizer({
+            files: {
+                less: fileAsContents(filePath('app-combined')),
+                dir: path.dirname(filePath('app-combined')),
+                filename: 'cool-less-file'
+            },
+            outputDir: buildDir()
+        }, function (err, css) {
+            Lab.expect(err).to.equal(null);
+            Lab.expect(typeof css[0]).to.equal('string');
+            Lab.expect(css[0].indexOf('cool-less-file.css') > -1).to.equal(true);
+            Lab.expect(css[0].indexOf('_build/') > -1).to.equal(true);
             done();
         });
     });
@@ -176,6 +241,26 @@ Lab.experiment('Pass in less strings', function () {
             Lab.expect(css[0].indexOf('body {')).to.equal(0);
             Lab.expect(css[0].indexOf('font-size: 100px;') > -1).to.equal(true);
             Lab.expect(css[0].indexOf('body p {') > -1).to.equal(true);
+            done();
+        });
+    });
+});
+
+Lab.experiment('Warns for overwriting props', function () {
+    Lab.test('less.outputDir and filename', function (done) {
+        lessitizer({
+            files: ['app-combined'].map(filePath),
+            outputDir: buildDir(),
+            less: {
+                outputDir: 'here',
+                filename: 'thisfilename'
+            }
+        }, function (err, files) {
+            Lab.expect(err).to.equal(null);
+            Lab.expect(Array.isArray(files)).to.equal(true);
+            Lab.expect(files.length).to.equal(1);
+            Lab.expect(typeof files[0]).to.equal('string');
+            Lab.expect(files[0].length > 1).to.equal(true);
             done();
         });
     });

@@ -59,14 +59,19 @@ lessitizer({
 
 Each `files` can be one of two things:
   - a path to a less file
-  - an object where `obj.less` is a string of Less
+  - an object with a `less` property that is a string of Less
 
-In the case where you are passing an object, you can also include a `dir` property. This is the path to where the directory where Less file *should* be, if it were actually written to disk. This will allow you to use Less's `@import` syntax relative to the `dir` you pass in. It should look like this:
+In the case where you are passing an object, you can also include a `dir` property. This is the path to where the directory where Less file *should* be, if it were actually written to disk. This will allow you to use Less's `@import` syntax relative to the `dir` you pass in.
+
+You can also pass in a `filename` option to specify the name of the file when/if it gets written to disk.
+
+It should look like this:
 
 ```js
 {
   less: '@import...',
-  dir: '/path/to/less/styles'
+  dir: '/path/to/less/styles',
+  filename: 'cool-file'
 }
 ```
 
