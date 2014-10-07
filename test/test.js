@@ -9,6 +9,7 @@ var fileAsContents = function (f) {
 var filePath = function (f) {
     return path.join(__dirname, '..', 'sample', 'less', f + '.less');
 };
+var lessDir = path.join(__dirname, '..', 'sample', 'less');
 var buildDir = function () {
     var _buildDir = path.join(__dirname, '..', '_build');
     var exists = fs.existsSync(_buildDir);
@@ -162,7 +163,7 @@ Lab.experiment('Pass in less strings', function () {
         }, function (err, css) {
             Lab.expect(err).to.equal(null);
             Lab.expect(typeof css[0]).to.equal('string');
-            Lab.expect(css[0].indexOf('lessitizier-file-1.css') > -1).to.equal(true);
+            Lab.expect(css[0].indexOf('lessitizer-file-1.css') > -1).to.equal(true);
             Lab.expect(css[0].indexOf('_build/') > -1).to.equal(true);
             done();
         });
@@ -185,7 +186,26 @@ Lab.experiment('Pass in less strings', function () {
         });
     });
 
-        Lab.test('written to output dir w/ filename w/o less ext', function (done) {
+    Lab.test('uses outputDir as an import path', function (done) {
+        lessitizer({
+            files: {
+                less: fileAsContents(filePath('app-combined'))
+            },
+            outputDir: lessDir
+        }, function (err, css) {
+            var cssPath = css[0];
+            var cssContents = fileAsContents(cssPath);
+            Lab.expect(err).to.equal(null);
+            Lab.expect(typeof cssContents).to.equal('string');
+            Lab.expect(cssContents.indexOf('body {')).to.equal(0);
+            Lab.expect(cssPath.indexOf('lessitizer-file-1.css') > -1).to.equal(true);
+            Lab.expect(cssPath.indexOf(lessDir) > -1).to.equal(true);
+            fs.unlink(cssPath);
+            done();
+        });
+    });
+
+    Lab.test('written to output dir w/ filename w/o less ext', function (done) {
         lessitizer({
             files: {
                 less: fileAsContents(filePath('app-combined')),

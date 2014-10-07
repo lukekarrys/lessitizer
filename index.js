@@ -26,6 +26,10 @@ function cssErr(err) {
     return css;
 }
 
+function isPath(str) {
+    return _.isString(str) && str.indexOf(path.sep) > -1;
+}
+
 
 module.exports = function (options, done) {
     var optionsErr;
@@ -68,11 +72,7 @@ module.exports = function (options, done) {
 
     async.map(lessFiles, function _lessFile(lessFile, fileDone) {
         var lessOptions = _.cloneDeep(options.less);
-        var paths = ['.'];
-        var lessFileName;
-        var lessDir;
-        var lessString;
-        var cssPath;
+        var paths, lessFileName, lessDir, lessString, cssPath;
 
         if (typeof lessFile === 'string') {
             lessDir = path.dirname(lessFile);
@@ -85,7 +85,7 @@ module.exports = function (options, done) {
 
         // Make a fallback less file name
         if (!lessFileName) {
-            lessFileName = 'lessitizier-file-' + count++ + '.less';
+            lessFileName = 'lessitizer-file-' + count++ + '.less';
         }
 
         // If we have an output dir, create the path to write the css file
@@ -101,16 +101,16 @@ module.exports = function (options, done) {
         // Paths for less parser to use for imports
         // - include our dir and filename if we have one
         // - include user supplied options too
-        _.chain([lessDir, lessFileName, lessOptions.paths]).flatten().each(function (p) {
-            if (p && typeof p === 'string') {
-                paths.push(p);
-            }
-        });
+        // - include the outputDir if there are no other paths
+        paths = _.chain([lessDir, lessFileName, lessOptions.paths]).flatten().filter(isPath).value();
+        if (paths.length === 0 && isPath(outputDir)) {
+            paths.push(outputDir);
+        }
 
         defaults(lessOptions, {
             optimization: 1,
             relativeUrls: true,
-            paths: _.uniq(paths),
+            paths: _.uniq(['.'].concat(paths)),
             filename: lessFileName,
             outputDir: outputDir
         });
