@@ -92,10 +92,6 @@ An object that will be passed directly to `new less.Parser()`. See the [Less con
 }
 ```
 
-- `toCSS` (`Object`, default `{}`)
-
-An object that will be passed directly to `cssTree.toCSS()`. See the [Less configuration](http://lesscss.org/#using-less-configuration) docs for available options.
-
 - `developmentMode` (`Boolean`, default `false`)
 
 If `developmentMode` is `true`, any errors will be written to the CSS file and displayed instead of the `body`.
