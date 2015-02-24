@@ -38,7 +38,6 @@ module.exports = function (options, done) {
     defaults(options, {
         files: [],
         less: {},
-        toCSS: {},
         developmentMode: false,
         outputDir: null
     });
@@ -115,8 +114,7 @@ module.exports = function (options, done) {
             outputDir: outputDir
         });
 
-        new less.Parser(lessOptions)
-        .parse(lessString, function _parseLess(lessErr, cssTree) {
+        less.render(lessString, lessOptions, function _parseLess(lessErr, cssObj) {
             var css;
             lessErr && (lessErr = less.formatError(lessErr));
 
@@ -125,7 +123,7 @@ module.exports = function (options, done) {
             } else if (lessErr) {
                 css = cssErr(lessErr);
             } else {
-                css = cssTree.toCSS(options.toCSS);
+                css = cssObj.css;
             }
 
             if (cssPath) {
