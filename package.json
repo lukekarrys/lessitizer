@@ -1,7 +1,7 @@
 {
   "name": "lessitizer",
   "description": "Easy Less processing for node/moonboots projects.",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "author": "Luke Karrys",
   "bugs": {
     "url": "https://github.com/lukekarrys/lessitizer/issues"
