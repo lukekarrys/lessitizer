@@ -7,32 +7,40 @@
     "url": "https://github.com/lukekarrys/lessitizer/issues"
   },
   "dependencies": {
-    "async": "^0.7.0",
-    "cssesc": "^0.1.0",
+    "async": "^2.1.4",
+    "cssesc": "^1.0.0",
     "defaults": "^1.0.0",
     "less": "^2.6.1",
-    "lodash": "^2.4.1"
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
-    "jshint": "^2.5.2",
-    "lab": "^3.0.1",
-    "precommit-hook": "^1.0.5",
-    "rmrf": "^1.0.2"
+    "code": "^4.0.0",
+    "git-validate": "^2.2.2",
+    "lab": "^12.1.0",
+    "rmrf": "^1.0.2",
+    "standard": "^8.6.0"
   },
   "homepage": "https://github.com/lukekarrys/lessitizer",
   "keywords": [
-    "less",
     "css",
+    "less",
     "moonboots"
   ],
   "license": "MIT",
   "main": "index.js",
+  "pre-commit": [
+    "lint",
+    "validate",
+    "test"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/lukekarrys/lessitizer.git"
   },
   "scripts": {
+    "lint": "standard",
+    "start": "node sample/build && cd sample && python -m SimpleHTTPServer && cd ..",
     "test": "./node_modules/.bin/lab -t 100",
-    "start": "node sample/build && cd sample && python -m SimpleHTTPServer && cd .."
+    "validate": "npm ls"
   }
 }
