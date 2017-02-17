@@ -18,7 +18,7 @@ lessitizer({
 }, done)
 
 // app-combined.less uses less's @import to
-//  include the theme so we only have one file
+// include the theme so we only have one file
 lessitizer({
   files: ['app-combined'].map(filePath),
   outputDir: path.join(__dirname, 'css')

@@ -22,6 +22,11 @@ var buildDir = function () {
   return _buildDir
 }
 
+lab.after((done) => {
+  rmrf(path.join(__dirname, '..', '_build'))
+  done()
+})
+
 lab.experiment('Init', function () {
   lab.test('Builds an array', function (done) {
     lessitizer({
@@ -228,7 +233,7 @@ lab.experiment('Pass in less strings', function () {
       files: {
         less: fileAsContents(filePath('app-combined'))
       },
-            // Get paths from less options
+      // Get paths from less options
       less: {
         paths: [path.dirname(filePath('app-combined'))]
       }

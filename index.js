@@ -32,7 +32,7 @@ function isPath (str) {
 module.exports = function (options, done) {
   var optionsErr
 
-    // Defaults, yo
+  // Defaults, yo
   defaults(options, {
     files: [],
     less: {},
@@ -40,7 +40,7 @@ module.exports = function (options, done) {
     outputDir: null
   })
 
-    // Some real bad errors right here
+  // Some real bad errors right here
   if (!options.files || options.files.length === 0) {
     optionsErr = new Error('You must specify some `files`.')
   }
@@ -53,7 +53,7 @@ module.exports = function (options, done) {
     return passError(optionsErr, done)
   }
 
-    // Some options we dont allow
+  // Some options we dont allow
   if (options.less.outputDir) {
     overwriteWarn('less.outputDir')
   }
@@ -80,25 +80,25 @@ module.exports = function (options, done) {
       lessString = lessFile.less
     }
 
-        // Make a fallback less file name
+    // Make a fallback less file name
     if (!lessFileName) {
       lessFileName = 'lessitizer-file-' + count++ + '.less'
     }
 
-        // If we have an output dir, create the path to write the css file
+    // If we have an output dir, create the path to write the css file
     if (outputDir) {
       cssPath = path.resolve(outputDir, path.basename(lessFileName, '.less') + '.css')
     }
 
-        // If we dont have a string, read it from the file
+    // If we dont have a string, read it from the file
     if (!lessString && typeof lessFile === 'string') {
       lessString = fs.readFileSync(path.resolve(lessFile), 'utf8')
     }
 
-        // Paths for less parser to use for imports
-        // - include our dir and filename if we have one
-        // - include user supplied options too
-        // - include the outputDir if there are no other paths
+    // Paths for less parser to use for imports
+    // - include our dir and filename if we have one
+    // - include user supplied options too
+    // - include the outputDir if there are no other paths
     paths = _.chain([lessDir, lessFileName, lessOptions.paths]).flatten().filter(isPath).value()
     if (paths.length === 0 && isPath(outputDir)) {
       paths.push(outputDir)
