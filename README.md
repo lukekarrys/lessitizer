@@ -1,12 +1,11 @@
 lessitizer
 ===============
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/lukekarrys/lessitizer.svg)](https://greenkeeper.io/)
+**Easy Less processing for node/moonboots projects.**
 
 [![NPM](https://nodei.co/npm/lessitizer.png)](https://nodei.co/npm/lessitizer/)
 [![Build Status](https://travis-ci.org/lukekarrys/lessitizer.png?branch=master)](https://travis-ci.org/lukekarrys/lessitizer)
-
-**Easy Less processing for node/moonboots projects.**
+[![Greenkeeper badge](https://badges.greenkeeper.io/lukekarrys/lessitizer.svg)](https://greenkeeper.io/)
 
 
 ## Install
