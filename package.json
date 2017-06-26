@@ -21,6 +21,11 @@
     "rmrf": "^1.0.2",
     "standard": "^10.0.2"
   },
+  "greenkeeper": {
+    "ignore": [
+      "eslint"  
+    ]
+  },
   "homepage": "https://github.com/lukekarrys/lessitizer",
   "keywords": [
     "css",
