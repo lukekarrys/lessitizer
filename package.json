@@ -15,11 +15,16 @@
   },
   "devDependencies": {
     "code": "^4.0.0",
-    "eslint": "^4.1.1",
+    "eslint": "^3.19.0",
     "git-validate": "^2.2.2",
     "lab": "^14.0.0",
     "rmrf": "^1.0.2",
     "standard": "^10.0.2"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "eslint"  
+    ]
   },
   "homepage": "https://github.com/lukekarrys/lessitizer",
   "keywords": [
